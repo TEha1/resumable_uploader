@@ -447,14 +447,16 @@
                     return true;
                 }
 
-                function chec_sum() {
+                function check_sum(file) {
                     var reader = new FileReader();
                     reader.addEventListener(
                         'load',
                         function () {
                             var wordArray = CryptoJS.lib.WordArray.create(this.result);
-                            let hexx = CryptoJS.MD5(wordArray).toString();
-                            console.log("heeeeeeeeeeeeeeeeeeex = ", hexx);
+                            let file_hash = CryptoJS.MD5(wordArray).toString();
+                            console.log("file_hash = ", file_hash);
+                            file.hash_value = file_hash;
+                            console.log("fileeeeeeee1 = ", file.hash_value);
                         }
                     );
                     reader.readAsArrayBuffer(fileList[0]);
@@ -464,7 +466,8 @@
                     if (!$.getFromUniqueIdentifier(uniqueIdentifier)) {
                         (function () {
                             file.uniqueIdentifier = uniqueIdentifier;
-                            chec_sum();
+                            check_sum(file);
+                            console.log("fileeeeeeee2 = ", file.hash_value);
                             var f = new ResumableFile($, file, uniqueIdentifier);
                             $.files.push(f);
                             files.push(f);
