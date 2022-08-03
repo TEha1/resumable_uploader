@@ -13,7 +13,7 @@
         <button type="submit">submit</button>
     </label>
 </form>
-<script src="{% static 'jquery-3.3.1.min.js' %}"></script>
+<script src="{% static 'jquery-3.3.1.js' %}"></script>
 <script src="{% static 'resumable.js' %}"></script>
 <script src="{% static 'crypto-js.min.js' %}"></script>
 
@@ -27,11 +27,8 @@
 
     r.assignBrowse(document.getElementById('browseButton'));
 
-    r.on('fileSuccess', function (file) {
-        console.debug('fileSuccess', file);
-    });
-    r.on('fileProgress', function (file) {
-        console.debug('fileProgress', file);
+    r.on('uploadStart', function () {
+        console.debug('uploadStart');
     });
     r.on('fileAdded', function (file, event) {
         r.upload();
@@ -41,20 +38,23 @@
         r.upload();
         console.debug('filesAdded', array);
     });
+    r.on('fileProgress', function (file) {
+        console.debug('fileProgress', file);
+    });
+    r.on('progress', function () {
+        console.debug('progress');
+    });
+    r.on('fileSuccess', function (file) {
+        console.debug('fileSuccess', file);
+    });
+    r.on('complete', function () {
+        console.debug('complete');
+    });
     r.on('fileRetry', function (file) {
         console.debug('fileRetry', file);
     });
     r.on('fileError', function (file, message) {
         console.debug('fileError', file, message);
-    });
-    r.on('uploadStart', function () {
-        console.debug('uploadStart');
-    });
-    r.on('complete', function () {
-        console.debug('complete');
-    });
-    r.on('progress', function () {
-        console.debug('progress');
     });
     r.on('error', function (message, file) {
         console.debug('error', message, file);

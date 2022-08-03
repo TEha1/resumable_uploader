@@ -8,6 +8,21 @@
 (function () {
     "use strict";
 
+    var check_sum = function (file) {
+        let reader = new FileReader();
+        reader.addEventListener(
+            'load',
+            function () {
+                let wordArray = CryptoJS.lib.WordArray.create(this.result);
+                let file_hash = CryptoJS.MD5(wordArray).toString();
+                console.log("file_hash = ", file_hash);
+                file.hash_value = file_hash;
+                console.log("fileeeeeeee1 = ", file.hash_value);
+            }
+        );
+        reader.readAsArrayBuffer(file);
+    }
+
     var Resumable = function (opts) {
         if (!(this instanceof Resumable)) {
             return new Resumable(opts);
@@ -28,14 +43,14 @@
             &&
             (!!Blob.prototype.webkitSlice || !!Blob.prototype.mozSlice || !!Blob.prototype.slice || false)
         );
-        if (!this.support) return (false);
+        if (!this.support) return false;
 
 
         // PROPERTIES
         var $ = this;
         $.files = [];
         $.defaults = {
-            chunkSize: 1 * 1024 * 1024,
+            chunkSize: 1024 * 1024,
             forceChunkSize: false,
             simultaneousUploads: 3,
             fileParameterName: 'file',
@@ -116,7 +131,7 @@
                     $opt = $opt.resumableObj;
                 }
             }
-            if ($opt instanceof Resumable) {
+             if ($opt instanceof Resumable) {
                 if (typeof $opt.opts[o] !== 'undefined') {
                     return $opt.opts[o];
                 } else {
@@ -147,10 +162,10 @@
         $.fire = function () {
             // `arguments` is an object, not array, in FF, so:
             var args = [];
-            for (var i = 0; i < arguments.length; i++) args.push(arguments[i]);
+            for (let i = 0; i < arguments.length; i++) args.push(arguments[i]);
             // Find event listeners, and support pseudo-event `catchAll`
             var event = args[0].toLowerCase();
-            for (var i = 0; i <= $.events.length; i += 2) {
+            for (let i = 0; i <= $.events.length; i += 2) {
                 if ($.events[i] == event) $.events[i + 1].apply($, args.slice(1));
                 if ($.events[i] == 'catchall') $.events[i + 1].apply(null, args);
             }
@@ -380,7 +395,8 @@
                     }
                 }
             );
-        };
+        }
+
 
         var appendFilesFromFileList = function (fileList, event) {
             // check for uploading too many files
@@ -447,39 +463,23 @@
                     return true;
                 }
 
-                function check_sum(file) {
-                    var reader = new FileReader();
-                    reader.addEventListener(
-                        'load',
-                        function () {
-                            var wordArray = CryptoJS.lib.WordArray.create(this.result);
-                            let file_hash = CryptoJS.MD5(wordArray).toString();
-                            console.log("file_hash = ", file_hash);
-                            file.hash_value = file_hash;
-                            console.log("fileeeeeeee1 = ", file.hash_value);
-                        }
-                    );
-                    reader.readAsArrayBuffer(fileList[0]);
-                }
-
                 function addFile(uniqueIdentifier) {
+                    check_sum(file);
                     if (!$.getFromUniqueIdentifier(uniqueIdentifier)) {
                         (function () {
                             file.uniqueIdentifier = uniqueIdentifier;
-                            check_sum(file);
-                            console.log("fileeeeeeee2 = ", file.hash_value);
                             var f = new ResumableFile($, file, uniqueIdentifier);
                             $.files.push(f);
                             files.push(f);
                             f.container = (typeof event != 'undefined' ? event.srcElement : null);
                             window.setTimeout(function () {
-                                $.fire('fileAdded', f, event)
+                                $.fire('fileAdded', f, event);
                             }, 0);
                         })()
                     } else {
                         filesSkipped.push(file);
                     }
-                    ;
+                    console.log("file2 = ", file.hash_value);
                     decreaseReamining();
                 }
 
@@ -690,7 +690,7 @@
                 }
             };
 
-            // Bootstrap and return
+            // Bootstrap  and return
             $.resumableObj.fire('chunkingStart', $);
             $.bootstrap();
             return (this);
@@ -799,7 +799,7 @@
             };
 
             // send() uploads the actual data in a POST call
-            $.send = function () {
+            $.send = function () { // post_request
                 var preprocess = $.getOpt('preprocess');
                 if (typeof preprocess === 'function') {
                     switch ($.preprocessState) {
